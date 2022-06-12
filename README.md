@@ -35,6 +35,7 @@ I expect to upgrade this customer project to 3.2 Django in the near future as we
 Referencing [Adam Johnson](http://twitter.com/adamchainz)'s [Well Maintained Test for dependencies](https://adamj.eu/tech/2021/11/04/the-well-maintained-test/), [question 11](https://adamj.eu/tech/2021/11/04/the-well-maintained-test/#has-there-been-a-commit-in-the-last-year) and [12](https://adamj.eu/tech/2021/11/04/the-well-maintained-test/#has-there-been-a-release-in-the-last-year), I quote
 
 > 11. Has there been a commit in the last year?
+>
 > Maintainers tend to abandon packages rather than explicitly mark them as unmaintained. So the probability of future maintenance drops off the longer a project has not seen a commit.
 >
 > We’d like to see at least one recent commit as a “sign of life”.
@@ -42,6 +43,7 @@ Referencing [Adam Johnson](http://twitter.com/adamchainz)'s [Well Maintained Tes
 > Any cutoff is arbitrary, but a year aligns with most programming languages’ annual release cadence.
 >
 > 12. Has there been a release in the last year?
+>
 > A backlog of unreleased commits can also be a sign of inattention. Active maintainers may have permission to merge but not release, with the true “owner” of the project absent.
 
 As of 10 June 2022, both answers are close to being no given it's been nearly 10 months since the most recent release and commit in August 2021.
