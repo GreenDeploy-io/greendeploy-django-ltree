@@ -7,14 +7,6 @@ requires = [
 [tool.black]
 target-version = ['py38']
 
-[tool.pytest.ini_options]
-addopts = """\
-    --strict-config
-    --strict-markers
-    --ds=tests.settings
-    """
-django_find_project = false
-
 [tool.mypy]
 mypy_path = "src/"
 namespace_packages = false
@@ -25,6 +17,3 @@ warn_unreachable = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 allow_untyped_defs = true
-
-[tool.rstcheck]
-report_level = "ERROR"
