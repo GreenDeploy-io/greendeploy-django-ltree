@@ -59,15 +59,16 @@ jobs:
           ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-
           ${{ runner.os }}-pip-
 
-    # Install Django only if cache miss
-    - name: Install Django
-      if: steps.pip-cache.outputs.cache-hit != 'true'
-      run: pip install django==${{ matrix.django-version }}
+    - name: Check for cached dependencies
+      run: |
+        echo "CACHE_HIT=true" >> $GITHUB_ENV
+      if: steps.cache.outputs.cache-hit == 'true'
 
-    # Install dependencies only if cache miss
     - name: Install dependencies
-      if: steps.pip-cache.outputs.cache-hit != 'true'
-      run: pip install -r requirements.txt
+      run: |
+        pip install django==${{ matrix.django-version }}
+        pip install -r requirements.txt
+      if: env.CACHE_HIT != 'true'
 
     # this step is only needed if you have local packages
     # this requires setup.cfg and [build-system] in pyproject.toml to work
