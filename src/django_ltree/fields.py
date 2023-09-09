@@ -77,21 +77,14 @@ class PathField(TextField):
         setattr(cls, self.name, PathValueProxy(self.name))
 
     def from_db_value(self, value, expression, connection, *args):
-        if value is None:
-            return value
-        return PathValue(value)
+        return value if value is None else PathValue(value)
 
     def get_prep_value(self, value):
-        if value is None:
-            return value
-        return str(PathValue(value))
+        return value if value is None else str(PathValue(value))
 
     def to_python(self, value):
-        if value is None:
+        if value is None or isinstance(value, PathValue):
             return value
-        elif isinstance(value, PathValue):
-            return value
-
         return PathValue(value)
 
     def get_db_prep_value(self, value, connection, prepared=False):
@@ -102,4 +95,4 @@ class PathField(TextField):
         elif isinstance(value, (list, str)):
             return str(PathValue(value))
 
-        raise ValueError("Unknown value type {}".format(type(value)))
+        raise ValueError(f"Unknown value type {type(value)}")
