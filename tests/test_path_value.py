@@ -1,7 +1,8 @@
-
 import pytest
+from django.forms import TextInput
 
-from django_ltree.fields import PathValue, PathValueProxy
+from django_ltree.fields import (PathField, PathFormField, PathValue,
+                                 PathValueProxy)
 
 
 def test_create():
@@ -80,3 +81,11 @@ def test_path_value_proxy_set():
     # Set a value to test normal functionality
     proxy.__set__(mock_instance, "some_value")
     assert mock_instance.some_field == "some_value"
+
+def test_path_field_formfield():
+    field = PathField()
+    form_field = field.formfield()
+
+    assert isinstance(form_field, PathFormField)
+    assert isinstance(form_field.widget, TextInput)
+    assert form_field.widget.attrs == {"class": "vTextField"}
