@@ -127,8 +127,12 @@ jobs:
       - name: Debug - Check if .coverage exists
         run: test -f .coverage && echo ".coverage exists" || echo ".coverage does NOT exist"
 
+      # previously: python -m coverage combine ./.coverage  # specify the file
       - name: Combine coverage data
-        run: python -m coverage combine ./.coverage  # specify the file
+        run: |
+          python -m coverage xml
+          sed -i 's|filename="/home/runner/work/greendeploy-django-ltree/greendeploy-django-ltree/|g' coverage.xml
+          python -m coverage report -i
 
       - name: Generate HTML report
         run: python -m coverage html --skip-covered --skip-empty
