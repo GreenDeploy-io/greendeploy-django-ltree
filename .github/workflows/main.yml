@@ -1,27 +1,122 @@
-name: Deploy
+name: Django Pytest Matrix CI/CD
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main  # replace with your default branch name if different
+  pull_request:
+    branches:
+      - main  # replace with your default branch name if different
 
 jobs:
-  
-  deploy:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11]
+        django-version: [3.2, 4.1, 4.2]
+        postgres-version: [14, 15]
+      fail-fast: false
+
+    services:
+      database:
+        image: postgres:${{ matrix.postgres-version }}
+        env:
+          POSTGRES_DB: ltree_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install build
-    - name: Build package
-      run: python -m build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+        pip install django==${{ matrix.django-version }}
+        pip install -r requirements.txt
+
+    - name: Wait for PostgreSQL to become ready
+      run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
+
+    - name: Run Django tests
+      env:
+        DJANGO_DATABASE_HOST: localhost
+        DJANGO_DATABASE_USER: postgres
+        DJANGO_DATABASE_PASSWORD: postgres
+      run: pytest  # replace with your test command
+
+    - name: Run tests and generate coverage
+      run: pytest --cov  # make sure to include --cov flag
+
+    - name: Upload coverage data
+      uses: actions/upload-artifact@v3
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        name: coverage-data
+        path: .coverage  # assuming pytest-cov generates .coverage files
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-22.04
+    needs: build  # depends on the 'build' job
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade coverage[toml] pytest-cov
+
+      - name: Download data
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-data
+
+      - name: Combine coverage and fail if it's <100%
+        run: |
+          python -m coverage combine
+          python -m coverage html --skip-covered --skip-empty
+          python -m coverage report --fail-under=100
+
+      - name: Upload HTML report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report
+          path: htmlcov
+
+  deploy:
+    name: Deploy to PyPI
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install --upgrade setuptools wheel twine
+
+      - name: Build package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Upload to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
