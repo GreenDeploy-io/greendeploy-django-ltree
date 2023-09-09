@@ -11,7 +11,7 @@ def pytest_sessionstart(session):
         DATABASES={
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
-                "NAME": "ltree_test",
+                "NAME": os.environ.get("DJANGO_DATABASE_NAME", "ltree_test"),
                 # this follows the service name `database` from the `services` section
                 # in .github/workflows/main.yml
                 "HOST": os.environ.get("DJANGO_DATABASE_HOST", "database"),
@@ -30,6 +30,6 @@ def pytest_sessionstart(session):
             "taxonomy",
         ],
         SITE_ID=1,
-        SILENCED_SYSTEM_CHECKS=["RemovedInDjango30Warning"],
+        SILENCED_SYSTEM_CHECKS=["RemovedInDjango50Warning"],
     )
     django.setup()

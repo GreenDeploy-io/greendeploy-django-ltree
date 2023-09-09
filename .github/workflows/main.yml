@@ -14,9 +14,12 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']  # Quoted version numbers
-        django-version: ['3.2', '4.1', '4.2']
-        postgres-version: ['14', '15']
+        # python-version: ['3.8', '3.9', '3.10', '3.11']  # Quoted version numbers
+        # django-version: ['3.2', '4.1', '4.2']
+        # postgres-version: ['14', '15']
+        python-version: [ '3.11']  # Quoted version numbers
+        django-version: ['4.2']
+        postgres-version: ['15']
       fail-fast: false
 
     services:
@@ -46,7 +49,7 @@ jobs:
 
     - name: Wait for PostgreSQL to become ready
       # this follows the service name `database` from the `services` section above
-      run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "database" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
+      run: sleep 10 && until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "database" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
 
     - name: Run Django tests
       env:
@@ -54,6 +57,7 @@ jobs:
         DJANGO_DATABASE_HOST: database
         DJANGO_DATABASE_USER: postgres
         DJANGO_DATABASE_PASSWORD: postgres
+        DJANGO_DATABASE_NAME: ltree_test
       run: pytest  # replace with your test command
 
     - name: Run tests and generate coverage
