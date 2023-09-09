@@ -69,13 +69,14 @@ class TreeModel(models.Model):
             )
 
         # Generate the new path using the same logic as in TreeManager.create_child
-        paths_in_use = self.children.all().values_list("path", flat=True)
+        paths_in_use = self.children().values_list("path", flat=True)
         path_generator = PathGenerator(
             prefix=self.path,
             skip=paths_in_use,
             label_size=getattr(type(self), "label_size"),
         )
-        kwargs["path"] = path_generator.next()
+        kwargs["path"] = next(path_generator)  # updated to Python 3's next function
 
         return type(self)._default_manager.create(**kwargs)
+
 
