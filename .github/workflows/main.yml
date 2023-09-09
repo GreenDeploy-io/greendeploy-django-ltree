@@ -118,6 +118,9 @@ jobs:
         with:
           name: coverage-data
 
+      - name: List directory contents after download
+        run: ls -al
+
       - name: Combine coverage and fail if it's <100%
         run: |
           python -m coverage combine .coverage  # specify the file
