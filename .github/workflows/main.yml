@@ -45,11 +45,13 @@ jobs:
         pip install -r requirements.txt
 
     - name: Wait for PostgreSQL to become ready
-      run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
+      # this follows the service name `database` from the `services` section above
+      run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "database" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
 
     - name: Run Django tests
       env:
-        DJANGO_DATABASE_HOST: localhost
+        # this follows the service name `database` from the `services` section above
+        DJANGO_DATABASE_HOST: database
         DJANGO_DATABASE_USER: postgres
         DJANGO_DATABASE_PASSWORD: postgres
       run: pytest  # replace with your test command

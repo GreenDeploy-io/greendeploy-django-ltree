@@ -12,7 +12,9 @@ def pytest_sessionstart(session):
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
                 "NAME": "ltree_test",
-                "HOST": os.environ.get("DJANGO_DATABASE_HOST", "localhost"),
+                # this follows the service name `database` from the `services` section
+                # in .github/workflows/main.yml
+                "HOST": os.environ.get("DJANGO_DATABASE_HOST", "database"),
                 "USER": os.environ.get("DJANGO_DATABASE_USER", "postgres"),
                 "PASSWORD": os.environ.get("DJANGO_DATABASE_PASSWORD", "postgres")
             }
