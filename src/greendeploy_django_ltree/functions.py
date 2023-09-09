@@ -1,8 +1,8 @@
-from django.db.models import Transform
-from django.db.models import fields
-from .fields import PathField
+from django.db.models import Transform, fields
 
-from django_ltree.fields import PathField
+from greendeploy_django_ltree.fields import PathField
+
+from .fields import PathField
 
 __all__ = ("NLevel",)
 

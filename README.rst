@@ -115,7 +115,7 @@ Make sure you add the trailing comma or you might get a ``ModuleNotFoundError``
 (see `this blog
 post <https://adamj.eu/tech/2020/06/29/why-does-python-raise-modulenotfounderror-when-modifying-installed-apps/>`__).
 
-You will also need to run `django_ltree` migrations before you added the `PathField`.
+You will also need to run `greendeploy_django_ltree` migrations before you added the `PathField`.
 
 See Quick Start below and in documentation for more details.
 

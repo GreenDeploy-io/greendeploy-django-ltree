@@ -1,6 +1,6 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-from taxonomy.models import Taxonomy
+from taxonomy.models import NoLabel, Taxonomy
 
 TEST_DATA = [
     {'name': 'Bacteria'},
@@ -128,6 +128,8 @@ def setup_and_teardown_db(db):
 
     # Creating test data
     create_objects(TEST_DATA, parent=None)
+    NoLabel.objects.create(name="abc")
+
 
     yield  # This is where the testing happens.
 
@@ -135,13 +137,11 @@ def setup_and_teardown_db(db):
     Taxonomy.objects.all().delete()
 
 
-def test_create(db):
-    create_test_data()
+def test_create(setup_and_teardown_db):
     assert Taxonomy.objects.count() != 0
 
 
-def test_roots(db):
-    create_test_data()
+def test_roots(setup_and_teardown_db):
     roots = Taxonomy.objects.roots().values_list('name', flat=True)
     assert set(roots) == {'Bacteria', 'Plantae', 'Animalia'}
 
@@ -154,14 +154,24 @@ def test_roots(db):
         ('Pogona', ['Pogona barbata', 'Pogona minor', 'Pogona vitticeps'])
     ]
 )
-def test_children(db, name, expected):
-    create_test_data()
+def test_model_children(setup_and_teardown_db, name, expected):
     children = Taxonomy.objects.get(name=name).children().values_list('name', flat=True)
     assert set(children) == set(expected)
 
 
-def test_label(db):
-    create_test_data()
+def test_manager_children(setup_and_teardown_db):
+    # Fetch the parent for which we want to get the children
+    parent = Taxonomy.objects.get(name='Mammalia')
+
+    # Fetch children using your custom manager's method
+    children = Taxonomy.objects.children(parent.path).values_list('name', flat=True)
+
+    # Validate that the correct children are fetched
+    expected_children = {'Carnivora', 'Pilosa'}
+    assert set(children) == expected_children
+
+
+def test_label(setup_and_teardown_db):
     # sourcery skip: no-loop-in-tests
     for item in Taxonomy.objects.all():
         label = item.label()
@@ -176,14 +186,12 @@ def test_label(db):
         ('Chordata', ['Animalia', 'Chordata'])
     ]
 )
-def test_ancestors(db, name, expected):
-    create_test_data()
+def test_ancestors(setup_and_teardown_db, name, expected):
     ancestors = Taxonomy.objects.get(name=name).ancestors().values_list('name', flat=True)
     assert list(ancestors) == expected
 
 
-def test_get_ancestors_paths(db):
-    create_test_data()
+def test_get_ancestors_paths(setup_and_teardown_db):
 
     # Build a lookup dictionary to map names to actual paths
     name_to_path = {obj.name: obj.path for obj in Taxonomy.objects.all()}
@@ -219,8 +227,7 @@ def test_get_ancestors_paths(db):
         ('Pogona', ['Pogona', 'Pogona barbata', 'Pogona minor', 'Pogona vitticeps'])
     ]
 )
-def test_descendants(db, name, expected):
-    create_test_data()
+def test_descendants(setup_and_teardown_db, name, expected):
     descendants = Taxonomy.objects.get(name=name).descendants().values_list('name', flat=True)
     assert set(descendants) == set(expected)
 
@@ -232,8 +239,7 @@ def test_descendants(db, name, expected):
         ('Pogona minor', 'Pogona')
     ]
 )
-def test_parent(db, name, expected):
-    create_test_data()
+def test_parent(setup_and_teardown_db, name, expected):
     parent = Taxonomy.objects.get(name=name).parent()
     assert getattr(parent, 'name', None) == expected
 
@@ -244,14 +250,12 @@ def test_parent(db, name, expected):
         ('Pogona vitticeps', ['Pogona minor', 'Pogona barbata'])
     ]
 )
-def test_siblings(db, name, expected):
-    create_test_data()
+def test_siblings(setup_and_teardown_db, name, expected):
     siblings = Taxonomy.objects.get(name=name).siblings().values_list('name', flat=True)
     assert set(siblings) == set(expected)
 
 
-def test_slicing(db):
-    create_test_data()
+def test_slicing(setup_and_teardown_db):
     qs = Taxonomy.objects.all()
     assert qs[:3].count() == 3
 
@@ -275,3 +279,16 @@ def test_add_child(setup_and_teardown_db):
     # Test Case 3: Adding a child with label_field set to None
     with pytest.raises(ImproperlyConfigured):
         parent.add_child(name=None)
+
+    # Test Case 4: Adding a child with path
+    with pytest.raises(ImproperlyConfigured):
+        parent.add_child(name="abc", path="01.01")
+
+
+def test_get_label_field_without_label_field(setup_and_teardown_db):
+    instance = NoLabel.objects.get(name="abc")
+
+    with pytest.raises(ImproperlyConfigured) as e:
+        instance.get_label_field()
+
+    assert str(e.value) == f"{NoLabel.__name__} has not defined a 'label_field'"

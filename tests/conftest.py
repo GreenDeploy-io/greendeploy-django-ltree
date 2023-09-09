@@ -24,7 +24,7 @@ def pytest_sessionstart(session):
             "django.contrib.messages",
             "django.contrib.sessions",
             "django.contrib.sites",
-            "django_ltree",
+            "greendeploy_django_ltree",
             "taxonomy",
         ],
         SITE_ID=1,

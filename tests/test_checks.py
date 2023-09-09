@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from django_ltree.checks import check_database_backend_is_postgres
+from greendeploy_django_ltree.checks import check_database_backend_is_postgres
 
 
 # Test when the database engine is Postgres
