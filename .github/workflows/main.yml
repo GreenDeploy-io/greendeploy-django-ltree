@@ -130,9 +130,7 @@ jobs:
       # previously: python -m coverage combine ./.coverage  # specify the file
       - name: Combine coverage data
         run: |
-          python -m coverage xml
-          sed -i 's|filename="/home/runner/work/greendeploy-django-ltree/greendeploy-django-ltree/|g' coverage.xml
-          python -m coverage report -i
+          python -m coverage combine
 
       - name: Generate HTML report
         run: python -m coverage html --skip-covered --skip-empty
