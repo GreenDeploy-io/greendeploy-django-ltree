@@ -102,6 +102,13 @@ def test_to_python():
     path_value = PathValue("1.2.3")
     assert path_field.to_python(path_value) is path_value
 
+    # Test when value is neither PathValue nor None
+    result = path_field.to_python("some_string")
+
+    assert isinstance(result, PathValue)
+    assert str(result) == "some_string"
+
+
 def test_get_db_prep_value():
     # Test when value is None
     assert path_field.get_db_prep_value(None, None) is None
