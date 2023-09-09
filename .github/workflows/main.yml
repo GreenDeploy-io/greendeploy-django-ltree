@@ -51,6 +51,7 @@ jobs:
     # Cache pip dependencies
     - name: Cache pip dependencies
       uses: actions/cache@v2
+      # Use the same id as `steps.pip-cache.outputs`
       id: pip-cache
       with:
         path: ~/.cache/pip
@@ -62,7 +63,8 @@ jobs:
     - name: Check for cached dependencies
       run: |
         echo "CACHE_HIT=true" >> $GITHUB_ENV
-      if: steps.cache.outputs.cache-hit == 'true'
+      # Use the same id as above
+      if: steps.pip-cache.outputs.cache-hit == 'true'
 
     - name: Install dependencies
       run: |
