@@ -25,7 +25,7 @@ def pytest_sessionstart(session):
             "django.contrib.sessions",
             "django.contrib.sites",
             "greendeploy_django_ltree",
-            "taxonomy",
+            "tests.taxonomy",
         ],
         SITE_ID=1,
         SILENCED_SYSTEM_CHECKS=["RemovedInDjango50Warning"],

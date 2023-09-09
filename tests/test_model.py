@@ -1,6 +1,7 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-from taxonomy.models import NoLabel, Taxonomy
+
+from tests.taxonomy.models import NoLabel, Taxonomy
 
 TEST_DATA = [
     {'name': 'Bacteria'},
