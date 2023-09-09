@@ -12,6 +12,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
+    env:
+      POSTGRES_DB: ltree_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
     strategy:
       matrix:
         # python-version: ['3.8', '3.9', '3.10', '3.11']  # Quoted version numbers
@@ -25,10 +30,7 @@ jobs:
     services:
       database:
         image: postgres:${{ matrix.postgres-version }}
-        env:
-          POSTGRES_DB: ltree_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -48,14 +50,14 @@ jobs:
         pip install -r requirements.txt
 
     - name: Wait for PostgreSQL to become ready
-      run: sleep 10 && until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
+      run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
 
     - name: Run Django tests
       env:
         DJANGO_DATABASE_HOST: localhost
-        DJANGO_DATABASE_USER: postgres
-        DJANGO_DATABASE_PASSWORD: postgres
-        DJANGO_DATABASE_NAME: ltree_test
+        DJANGO_DATABASE_USER: ${{ env.POSTGRES_USER }}
+        DJANGO_DATABASE_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        DJANGO_DATABASE_NAME: ${{ env.POSTGRES_DB }}
       run: pytest  # replace with your test command
 
     - name: Run tests and generate coverage
