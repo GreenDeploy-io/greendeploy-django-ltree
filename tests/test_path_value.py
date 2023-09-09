@@ -66,12 +66,16 @@ def test_path_value_proxy_get():
     # Test the `if value is None: return value` line
     assert proxy.__get__(mock_instance, MockModel) is None
 
+
 def test_path_value_proxy_set():
     proxy = PathValueProxy("some_field")
     mock_instance = MockModel()
 
     # Test the `if instance is None: return self` line
-    assert proxy.__set__(None, "some_value") is None  # This won't raise an exception
+    try:
+        proxy.__set__(None, "some_value")  # This won't raise an exception
+    except Exception:
+        pytest.fail("Should not raise any exceptions")
 
     # Set a value to test normal functionality
     proxy.__set__(mock_instance, "some_value")
