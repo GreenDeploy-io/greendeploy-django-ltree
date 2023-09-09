@@ -168,28 +168,34 @@ def test_ancestors(db, name, expected):
     assert list(ancestors) == expected
 
 
-@pytest.mark.parametrize(
-    'name, expected_paths', [
+def test_get_ancestors_paths(db):
+    create_test_data()
+
+    # Build a lookup dictionary to map names to actual paths
+    name_to_path = {obj.name: obj.path for obj in Taxonomy.objects.all()}
+
+    test_cases = [
         ('Canis lupus', [
-            ['Animalia'],
-            ['Animalia', 'Chordata'],
-            ['Animalia', 'Chordata', 'Mammalia'],
-            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora'],
-            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora', 'Canidae'],
-            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora', 'Canidae', 'Canis'],
+            name_to_path['Animalia'],
+            name_to_path['Chordata'],
+            name_to_path['Mammalia'],
+            name_to_path['Carnivora'],
+            name_to_path['Canidae'],
+            name_to_path['Canis'],
         ]),
         ('Bacteria', []),
         ('Chordata', [
-            ['Animalia'],
+            name_to_path['Animalia'],
         ]),
     ]
-)
-def test_get_ancestors_paths(db, name, expected_paths):
-    create_test_data()
-    tax = Taxonomy.objects.get(name=name)
-    ancestors_paths = tax.get_ancestors_paths()
-    ancestors_paths_str = [[str(part) for part in path] for path in ancestors_paths]
-    assert ancestors_paths_str == expected_paths
+
+    # sourcery skip: no-loop-in-tests
+    for name, expected_paths in test_cases:
+        tax = Taxonomy.objects.get(name=name)
+        ancestors_paths = tax.get_ancestors_paths()
+        ancestors_paths_str = [[str(part) for part in path] for path in ancestors_paths]
+        assert ancestors_paths_str == expected_paths
+
 
 
 @pytest.mark.parametrize(
