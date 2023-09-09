@@ -40,6 +40,7 @@ We aim to achieve this in three ways:
 2. **Quick, early wins in 10 mins each**: We have picked 3 base cases as early
     wins for you. Each of these should take you no more than 10 mins to
     complete, including reading the docs.
+
     - **Install in sandbox project**: We show you how to install the package
         in a sandbox project and create the field in your Postgres database.
     - **Add materialized path in ltree field**: We show you how to add data
