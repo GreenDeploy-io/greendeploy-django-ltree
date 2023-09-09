@@ -89,3 +89,28 @@ def test_path_field_formfield():
     assert isinstance(form_field, PathFormField)
     assert isinstance(form_field.widget, TextInput)
     assert form_field.widget.attrs == {"class": "vTextField"}
+
+
+# Initialize your PathField instance for the next 2 tests
+path_field = PathField()
+
+def test_to_python():
+    # Test when value is None
+    assert path_field.to_python(None) is None
+
+    # Test when value is already a PathValue
+    path_value = PathValue("1.2.3")
+    assert path_field.to_python(path_value) is path_value
+
+def test_get_db_prep_value():
+    # Test when value is None
+    assert path_field.get_db_prep_value(None, None) is None
+
+    # Test other cases
+    assert path_field.get_db_prep_value(PathValue("1.2.3"), None) == "1.2.3"
+    assert path_field.get_db_prep_value("1.2.3", None) == "1.2.3"
+    assert path_field.get_db_prep_value(["1", "2", "3"], None) == "1.2.3"
+
+    # Test when value is of unknown type
+    with pytest.raises(ValueError):
+        path_field.get_db_prep_value(object(), None)
