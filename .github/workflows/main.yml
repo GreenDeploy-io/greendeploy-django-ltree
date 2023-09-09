@@ -76,7 +76,7 @@ jobs:
 
     # Install the local package (not cached)
     - name: Install local package
-      run: pip install .
+      run: pip install -e
 
     - name: Wait for PostgreSQL to become ready
       run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
