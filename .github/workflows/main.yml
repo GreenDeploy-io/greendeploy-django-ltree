@@ -48,34 +48,35 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    # Cache pip dependencies
+    # Cache other dependencies from requirements.txt
     - name: Cache pip dependencies
       uses: actions/cache@v2
-      # Use the same id as `steps.pip-cache.outputs`
-      id: pip-cache
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-django-${{ matrix.django-version }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-
           ${{ runner.os }}-pip-
 
-    - name: Check for cached dependencies
-      run: |
-        echo "CACHE_HIT=true" >> $GITHUB_ENV
-      # Use the same id as above
-      if: steps.pip-cache.outputs.cache-hit == 'true'
+    # Cache matrix dependencies
+    - name: Cache matrix dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-matrix-${{ matrix.django-version }}
+        restore-keys: |
+          ${{ runner.os }}-pip-matrix-
 
+    # Install matrix dependencies
+    - name: Install Django
+      run: pip install django==${{ matrix.django-version }}
+
+    # Install other dependencies
     - name: Install dependencies
-      run: |
-        pip install django==${{ matrix.django-version }}
-        pip install -r requirements.txt
-      if: env.CACHE_HIT != 'true'
+      run: pip install -r requirements.txt
 
-    # this step is only needed if you have local packages
-    # this requires setup.cfg and [build-system] in pyproject.toml to work
-    - name: Install local packages as editable
-      run: pip install -e .
+    # Install the local package (not cached)
+    - name: Install local package
+      run: pip install .
 
     - name: Wait for PostgreSQL to become ready
       run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
