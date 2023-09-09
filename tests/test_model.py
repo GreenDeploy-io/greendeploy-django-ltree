@@ -1,7 +1,6 @@
 import pytest
-
+from django.core.exceptions import ImproperlyConfigured
 from taxonomy.models import Taxonomy
-
 
 TEST_DATA = [
     {'name': 'Bacteria'},
@@ -131,7 +130,7 @@ def test_create(db):
 def test_roots(db):
     create_test_data()
     roots = Taxonomy.objects.roots().values_list('name', flat=True)
-    assert set(roots) == set(['Bacteria', 'Plantae', 'Animalia'])
+    assert set(roots) == {'Bacteria', 'Plantae', 'Animalia'}
 
 
 @pytest.mark.parametrize(
@@ -167,6 +166,30 @@ def test_ancestors(db, name, expected):
     create_test_data()
     ancestors = Taxonomy.objects.get(name=name).ancestors().values_list('name', flat=True)
     assert list(ancestors) == expected
+
+
+@pytest.mark.parametrize(
+    'name, expected_paths', [
+        ('Canis lupus', [
+            ['Animalia'],
+            ['Animalia', 'Chordata'],
+            ['Animalia', 'Chordata', 'Mammalia'],
+            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora'],
+            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora', 'Canidae'],
+            ['Animalia', 'Chordata', 'Mammalia', 'Carnivora', 'Canidae', 'Canis'],
+        ]),
+        ('Bacteria', []),
+        ('Chordata', [
+            ['Animalia'],
+        ]),
+    ]
+)
+def test_get_ancestors_paths(db, name, expected_paths):
+    create_test_data()
+    tax = Taxonomy.objects.get(name=name)
+    ancestors_paths = tax.get_ancestors_paths()
+    ancestors_paths_str = [[str(part) for part in path] for path in ancestors_paths]
+    assert ancestors_paths_str == expected_paths
 
 
 @pytest.mark.parametrize(
@@ -211,3 +234,25 @@ def test_slicing(db):
     create_test_data()
     qs = Taxonomy.objects.all()
     assert qs[:3].count() == 3
+
+
+def test_add_child(db):
+    create_test_data()
+
+    parent = Taxonomy.objects.get(name="Animalia")
+
+    # Test Case 1: Adding a child properly
+    try:
+        child = parent.add_child(name="Mammalia")
+        assert child.name == "Mammalia"
+        assert str(child.path) == "Animalia.Mammalia"  # Assuming PathValue's string representation works like this
+    except Exception as e:
+        pytest.fail(f"Exception {e} was raised unexpectedly.")
+
+    # Test Case 2: Adding a child without providing the label_field in kwargs
+    with pytest.raises(ImproperlyConfigured):
+        parent.add_child()
+
+    # Test Case 3: Adding a child with label_field set to None
+    with pytest.raises(ImproperlyConfigured):
+        parent.add_child(name=None)

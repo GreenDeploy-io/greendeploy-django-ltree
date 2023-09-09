@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
 from .fields import PathField, PathValue
@@ -11,6 +12,18 @@ class TreeModel(models.Model):
     class Meta:
         abstract = True
         ordering = ("path",)
+
+    def get_label_field(self):
+        if label_field := getattr(self, 'label_field', None):
+            return label_field
+        else:
+            raise ImproperlyConfigured(
+                f"{self.__class__.__name__} has not defined a 'label_field'"
+            )
+
+    def get_value_from_label_field(self):
+        label_field = self.get_label_field()
+        return getattr(self, label_field, None)
 
     def label(self):
         return self.path[-1]
@@ -44,9 +57,22 @@ class TreeModel(models.Model):
             .exclude(path=self.path)
         )
 
-    def add_child(self, slug, **kwargs):  # type:(str) -> Any
-        assert "path" not in kwargs
-        kwargs["path"] = self.path[:]
-        kwargs["path"].append(slug)
-        kwargs["slug"] = slug
+    def add_child(self, **kwargs):  # type: (Any) -> Any
+        label_field = self.get_label_field()
+
+        if label_field not in kwargs:
+            raise ImproperlyConfigured(
+                f"'{label_field}' must be provided in kwargs to add a child."
+            )
+
+        label_value = kwargs[label_field]
+
+        if 'path' in kwargs:
+            raise ImproperlyConfigured(
+                "'path' should not be provided in kwargs, it will be automatically set."
+            )
+
+        kwargs['path'] = self.path[:]  # Assuming self.path is a list
+        kwargs['path'].append(label_value)
+
         return type(self)._default_manager.create(**kwargs)
