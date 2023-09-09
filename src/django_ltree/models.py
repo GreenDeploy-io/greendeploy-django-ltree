@@ -3,6 +3,7 @@ from django.db import models
 
 from .fields import PathField, PathValue
 from .managers import TreeManager
+from .paths import PathGenerator
 
 
 class TreeModel(models.Model):
@@ -53,7 +54,8 @@ class TreeModel(models.Model):
             .exclude(path=self.path)
         )
 
-    def add_child(self, **kwargs):  # type: (Any) -> Any
+
+    def add_child(self, **kwargs):
         label_field = self.get_label_field()
 
         if label_field not in kwargs:
@@ -61,14 +63,19 @@ class TreeModel(models.Model):
                 f"'{label_field}' must be provided in kwargs to add a child."
             )
 
-        label_value = kwargs[label_field]
-
         if 'path' in kwargs:
             raise ImproperlyConfigured(
                 "'path' should not be provided in kwargs, it will be automatically set."
             )
 
-        kwargs['path'] = self.path[:]  # Assuming self.path is a list
-        kwargs['path'].append(label_value)
+        # Generate the new path using the same logic as in TreeManager.create_child
+        paths_in_use = self.children.all().values_list("path", flat=True)
+        path_generator = PathGenerator(
+            prefix=self.path,
+            skip=paths_in_use,
+            label_size=getattr(type(self), "label_size"),
+        )
+        kwargs["path"] = path_generator.next()
 
         return type(self)._default_manager.create(**kwargs)
+
