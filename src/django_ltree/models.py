@@ -21,10 +21,6 @@ class TreeModel(models.Model):
                 f"{self.__class__.__name__} has not defined a 'label_field'"
             )
 
-    def get_value_from_label_field(self):
-        label_field = self.get_label_field()
-        return getattr(self, label_field, None)
-
     def label(self):
         return self.path[-1]
 
