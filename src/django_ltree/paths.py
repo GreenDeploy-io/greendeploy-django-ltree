@@ -9,7 +9,7 @@ class PathGenerator(object):
 
     def __init__(self, prefix=None, skip=None, label_size=None):
         self.skip_paths = [] if skip is None else skip[:]
-        self.path_prefix = prefix if prefix else []
+        self.path_prefix = prefix or []
         self.product_iterator = product(
             self._alphabet, repeat=label_size or self._default_label_size
         )

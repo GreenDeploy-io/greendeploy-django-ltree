@@ -1,9 +1,12 @@
 import os
 
+import pytest
+
 from django_ltree.checks import check_database_backend_is_postgres
 
 
 # Test when the database engine is Postgres
+@pytest.mark.filterwarnings("ignore:Overriding setting DATABASES can lead to unexpected behavior.")
 def test_database_is_postgres(settings):
     settings.DATABASES = {
         'default': {
@@ -18,6 +21,7 @@ def test_database_is_postgres(settings):
     assert len(errors) == 0
 
 # Test when the database engine is not Postgres
+@pytest.mark.filterwarnings("ignore:Overriding setting DATABASES can lead to unexpected behavior.")
 def test_database_is_not_postgres(settings):
     settings.DATABASES = {
         'default': {

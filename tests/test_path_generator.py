@@ -18,13 +18,17 @@ def test_path_generator_skip(db):
     path_gen = PathGenerator(label_size=1, prefix=["prefix"], skip=skip)
 
     # Consume two items
-    next(path_gen)
-    next(path_gen)
+    next(path_gen) # 2
+    next(path_gen) # 3
 
-    # The third one should be 2
-    assert path_gen.__next__() == PathValue(["prefix", "2"])
+    # The third one should be 4
+    assert path_gen.__next__() == PathValue(["prefix", "4"])
 
 def test_path_generator_next_alias(db):
-    path_gen = PathGenerator(label_size=1)
-    assert path_gen.next() == path_gen.__next__()
+    path_gen1 = PathGenerator(label_size=1)
+    path_gen2 = PathGenerator(label_size=1)
+
+    # prove that functionally equivalent
+    # even though they are different instances
+    assert path_gen1.next() == path_gen2.__next__()
 

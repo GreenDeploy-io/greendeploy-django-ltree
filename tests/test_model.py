@@ -122,6 +122,19 @@ def create_test_data():
     create_objects(TEST_DATA, parent=None)
 
 
+@pytest.fixture(scope='function')
+def setup_and_teardown_db(db):
+    # Setup: Code to set up your test environment.
+
+    # Creating test data
+    create_objects(TEST_DATA, parent=None)
+
+    yield  # This is where the testing happens.
+
+    # Teardown: Code to clean up your test environment.
+    Taxonomy.objects.all().delete()
+
+
 def test_create(db):
     create_test_data()
     assert Taxonomy.objects.count() != 0
@@ -149,6 +162,7 @@ def test_children(db, name, expected):
 
 def test_label(db):
     create_test_data()
+    # sourcery skip: no-loop-in-tests
     for item in Taxonomy.objects.all():
         label = item.label()
         assert label.isalnum()
@@ -242,16 +256,15 @@ def test_slicing(db):
     assert qs[:3].count() == 3
 
 
-def test_add_child(db):
-    create_test_data()
-
+def test_add_child(setup_and_teardown_db):
     parent = Taxonomy.objects.get(name="Animalia")
 
     # Test Case 1: Adding a child properly
     try:
+        assert str(parent.path) == "02"
         child = parent.add_child(name="Mammalia")
         assert child.name == "Mammalia"
-        assert str(child.path) == "Animalia.Mammalia"  # Assuming PathValue's string representation works like this
+        assert str(child.path) == "02.01"  # Assuming PathValue's string representation works like this
     except Exception as e:
         pytest.fail(f"Exception {e} was raised unexpectedly.")
 

@@ -63,6 +63,12 @@ class TreeModel(models.Model):
                 f"'{label_field}' must be provided in kwargs to add a child."
             )
 
+        # label_field value cannot be None
+        if kwargs[label_field] is None:
+            raise ImproperlyConfigured(
+                f"'{label_field}' cannot be None."
+            )
+
         if 'path' in kwargs:
             raise ImproperlyConfigured(
                 "'path' should not be provided in kwargs, it will be automatically set."
