@@ -121,11 +121,20 @@ jobs:
       - name: List directory contents after download
         run: ls -al
 
+      - name: Display .coverage file information
+        run: cat .coverage
+
+      - name: Debug coverage data before combining
+        run: python -m coverage debug data
+
       - name: Combine coverage and fail if it's <100%
         run: |
-          python -m coverage combine .coverage  # specify the file
+          python -m coverage combine ./.coverage  # specify the file
           python -m coverage html --skip-covered --skip-empty
           python -m coverage report --fail-under=100
+
+      - name: Debug coverage data after combining
+        run: python -m coverage debug data
 
       - name: Upload HTML report
         if: ${{ failure() }}
