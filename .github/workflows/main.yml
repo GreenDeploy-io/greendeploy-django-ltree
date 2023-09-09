@@ -69,9 +69,6 @@ jobs:
         DJANGO_DATABASE_NAME: ${{ env.POSTGRES_DB }}
       run: pytest  # replace with your test command
 
-    - name: Run tests and generate coverage
-      run: pytest --cov  # make sure to include --cov flag
-
     - name: Upload coverage data
       uses: actions/upload-artifact@v3
       with:
