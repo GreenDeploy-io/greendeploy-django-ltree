@@ -53,6 +53,11 @@ jobs:
         pip install django==${{ matrix.django-version }}
         pip install -r requirements.txt
 
+    # this step is only needed if you have local packages
+    # this requires setup.cfg and [build-system] in pyproject.toml to work
+    - name: Install local packages as editable
+      run: pip install -e .
+
     - name: Wait for PostgreSQL to become ready
       run: until PGPASSWORD=${{ env.POSTGRES_PASSWORD }} psql -h "localhost" -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\q'; do sleep 2; done
 
