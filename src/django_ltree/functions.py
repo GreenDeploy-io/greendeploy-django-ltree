@@ -1,6 +1,6 @@
 from django.db.models import Transform, fields
 
-from greendeploy_django_ltree.fields import PathField
+from django_ltree.fields import PathField
 
 from .fields import PathField
 

@@ -1,6 +1,6 @@
 from django.db import models
 
-from greendeploy_django_ltree.models import TreeModel
+from django_ltree.models import TreeModel
 
 
 class Taxonomy(TreeModel):

@@ -1,6 +1,6 @@
 from itertools import product
 
-from greendeploy_django_ltree.fields import PathValue
+from django_ltree.fields import PathValue
 
 
 class PathGenerator(object):

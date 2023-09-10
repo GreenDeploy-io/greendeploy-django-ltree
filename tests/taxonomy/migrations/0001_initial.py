@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-import greendeploy_django_ltree.fields
+import django_ltree.fields
 
 
 class Migration(migrations.Migration):
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='Taxonomy',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path', greendeploy_django_ltree.fields.PathField(unique=True)),
+                ('path', django_ltree.fields.PathField(unique=True)),
                 ('name', models.TextField()),
             ],
             options={
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='NoLabel',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path', greendeploy_django_ltree.fields.PathField(unique=True)),
+                ('path', django_ltree.fields.PathField(unique=True)),
                 ('name', models.TextField()),
             ],
             options={

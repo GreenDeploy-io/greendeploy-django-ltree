@@ -1,8 +1,8 @@
 import pytest
 from django.forms import TextInput
 
-from greendeploy_django_ltree.fields import (PathField, PathFormField,
-                                             PathValue, PathValueProxy)
+from django_ltree.fields import (PathField, PathFormField, PathValue,
+                                 PathValueProxy)
 
 
 def test_create():

@@ -1,6 +1,6 @@
 from django.db import models
 
-from greendeploy_django_ltree.paths import PathGenerator
+from django_ltree.paths import PathGenerator
 
 
 class TreeQuerySet(models.QuerySet):

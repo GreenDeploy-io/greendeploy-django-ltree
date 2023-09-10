@@ -1,5 +1,5 @@
-from greendeploy_django_ltree.fields import PathValue
-from greendeploy_django_ltree.paths import PathGenerator
+from django_ltree.fields import PathValue
+from django_ltree.paths import PathGenerator
 
 
 def test_path_generator_iterable(db):

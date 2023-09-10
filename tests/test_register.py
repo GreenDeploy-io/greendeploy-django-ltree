@@ -1,5 +1,5 @@
-from greendeploy_django_ltree import functions, lookups
-from greendeploy_django_ltree.fields import PathField
+from django_ltree import functions, lookups
+from django_ltree.fields import PathField
 
 
 def test_registered_lookups():
