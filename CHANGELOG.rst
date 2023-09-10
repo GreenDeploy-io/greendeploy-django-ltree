@@ -2,7 +2,7 @@
 Changelog
 =========
 
-0.6.0 (2023-09-10)
+0.6.0a (2023-09-10)
 ------------------
 
 * Drop Django <=3.1 support.
@@ -11,3 +11,4 @@ Changelog
 * Support Django 3.2, 4.1, and 4.2.
 * Drop Travis CI in favor of GitHub Actions.
 * Refactor Markdown files in favor of reStructuredText.
+* Fork from the `original project <https://github.com/mariocesar/django-ltree>`__.
