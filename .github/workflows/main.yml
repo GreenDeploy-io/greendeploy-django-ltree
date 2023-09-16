@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        # python-version: ['3.8', '3.9', '3.10', '3.11']  # Quoted version numbers
+        # python-version: ['3.8', '3.9', '3.10', '3.11']
         # django-version: ['3.2', '4.1', '4.2']
         # postgres-version: ['14', '15']
         python-version: [ '3.11']  # Quoted version numbers
@@ -92,11 +92,15 @@ jobs:
     - name: List directory contents
       run: ls -al
 
+    - name: Rename coverage data
+      run: |
+        mv .coverage .coverage_${{ matrix.python-version }}_${{ matrix.django-version }}
+  
     - name: Upload coverage data
       uses: actions/upload-artifact@v3
       with:
         name: coverage-data
-        path: .coverage  # assuming pytest-cov generates .coverage files
+        path: .coverage_${{ matrix.python-version }}_${{ matrix.django-version }}
 
   coverage:
     name: Coverage
@@ -115,11 +119,16 @@ jobs:
 
       - name: Download data
         uses: actions/download-artifact@v3
-        with:
-          name: coverage-data
+        # with:
+        #   name: coverage-data
 
       - name: List directory contents after download
         run: ls -al
+
+      - name: List directory contents after download
+        run: |
+          cd coverage-data
+          ls -al
 
       - name: Debug coverage data before combining
         run: python -m coverage debug data
@@ -127,15 +136,26 @@ jobs:
       - name: Debug - Check if .coverage exists
         run: test -f .coverage && echo ".coverage exists" || echo ".coverage does NOT exist"
 
-      - name: Debug - Show .coverage contents
-        run: cat .coverage
+      # - name: Debug - Show .coverage contents
+      #   run: cat .coverage
+      - name: Check number of coverage files
+        id: check-num-files
+        run: |
+          cd coverage-data
+          num_files=$(ls .coverage_* | wc -l)
+          echo "::set-output name=num_files::$num_files"   
       # previously: python -m coverage combine ./.coverage  # specify the file
-      # - name: Combine coverage data
-      #   run: |
-      #     python -m coverage combine .coverage
+      - name: Combine coverage data
+        if: steps.check-num-files.outputs.num_files > 1  
+        run: |
+          cd coverage-data
+          python -m coverage combine .coverage_*
 
       - name: Generate HTML report
-        run: python -m coverage html --skip-covered --skip-empty
+        run: |
+          cd coverage-data
+          ls -al
+          python -m coverage html --skip-covered --skip-empty || echo "Coverage command failed"
 
       # Comment for debugging. Uncomment to fail if coverage is below 100%.
       # - name: Fail if coverage is below 100%
@@ -151,28 +171,3 @@ jobs:
         with:
           name: html-report
           path: htmlcov
-
-  deploy:
-    name: Deploy to PyPI
-    runs-on: ubuntu-22.04
-    if: github.event_name == 'release' && github.event.action == 'created'
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install --upgrade setuptools wheel twine
-
-      - name: Build package
-        run: python setup.py sdist bdist_wheel
-
-      - name: Upload to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
