@@ -17,10 +17,13 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install --upgrade setuptools wheel twine
+        run: pip install --upgrade setuptools wheel twine build
+
+      # - name: Build package
+      #   run: python setup.py sdist bdist_wheel
 
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: python -m build
 
       - name: Upload to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
