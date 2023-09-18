@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from django.core.checks import Warning as DjangoWarning
 from django.core.checks import register
-from django.core.checks import Warning
 
 
 @register
@@ -15,7 +15,7 @@ def check_database_backend_is_postgres(app_configs, **kwargs):
         d not in settings.DATABASES["default"]["ENGINE"] for d in valid_dbs
     ):
         errors.append(
-            Warning(
+            DjangoWarning(
                 "django_ltree needs postgres to support install the ltree extension.",
                 hint="Use the postgres engine or ignore if you already use a custom engine for postgres",
                 id="django_ltree.W001",  # This is the ID

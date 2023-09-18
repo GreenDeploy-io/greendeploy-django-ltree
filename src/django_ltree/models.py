@@ -3,8 +3,7 @@ from __future__ import annotations
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
-from .fields import PathField
-from .fields import PathValue
+from .fields import PathField, PathValue
 from .managers import TreeManager
 from .paths import PathGenerator
 
@@ -28,7 +27,8 @@ class TreeModel(models.Model):
     def label(self):
         return self.path[-1]
 
-    def get_ancestors_paths(self):  # type: () -> List[List[str]]
+    def get_ancestors_paths(self):
+        # type: () -> list[list[str]]
         return [PathValue(self.path[:n]) for n, p in enumerate(self.path) if n > 0]
 
     def ancestors(self):
