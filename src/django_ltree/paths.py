@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from itertools import product
 
 from django_ltree.fields import PathValue
 
 
-class PathGenerator(object):
+class PathGenerator:
     _alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     _default_label_size = 6  # Postgres limits this to 256
 

@@ -1,4 +1,7 @@
-from django_ltree import functions, lookups
+from __future__ import annotations
+
+from django_ltree import functions
+from django_ltree import lookups
 from django_ltree.fields import PathField
 
 

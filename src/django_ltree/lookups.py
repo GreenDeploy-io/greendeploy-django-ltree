@@ -1,4 +1,8 @@
-from django.db.models import IntegerField, Lookup, Transform
+from __future__ import annotations
+
+from django.db.models import IntegerField
+from django.db.models import Lookup
+from django.db.models import Transform
 
 from .fields import PathField
 
@@ -9,7 +13,7 @@ class SimpleLookup(Lookup):
     def as_sql(self, compiler, connection):
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
-        return "{} {} {}".format(lhs, self.lookup_operator, rhs), [*lhs_params, *rhs_params]
+        return f"{lhs} {self.lookup_operator} {rhs}", [*lhs_params, *rhs_params]
 
 
 @PathField.register_lookup
@@ -19,7 +23,7 @@ class EqualLookup(Lookup):
     def as_sql(self, compiler, connection):
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
-        return "{} = {}".format(lhs, rhs), [*lhs_params, *rhs_params]
+        return f"{lhs} = {rhs}", [*lhs_params, *rhs_params]
 
 
 @PathField.register_lookup

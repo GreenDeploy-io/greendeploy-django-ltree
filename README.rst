@@ -1,6 +1,6 @@
-========================
+=======================
 greendeploy-django-ltree
-========================
+=======================
 
 .. image:: https://img.shields.io/github/actions/workflow/status/GreenDeploy-io/greendeploy-django-ltree/main.yml?branch=main&style=for-the-badge
    :target: https://github.com/GreenDeploy-io/greendeploy-django-ltree/actions?workflow=CI

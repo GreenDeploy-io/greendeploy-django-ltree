@@ -1,6 +1,21 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": true,
+        "source.organizeImports.ruff": true
+      },
     },
-    "python.formatting.provider": "none"
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.sortImports.args": [
+        "--profile=black"
+    ],
+    "python.linting.flake8Args": [
+      "--max-line-length=88",
+      "--select=E,W,F",
+      "--ignore=E203,W503"
+    ],
 }

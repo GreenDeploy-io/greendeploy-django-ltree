@@ -7,6 +7,9 @@ requires = [
 [tool.black]
 target-version = ['py38']
 
+[tool.ruff]
+ignore-init-module-imports = true
+
 [tool.mypy]
 mypy_path = "src/"
 namespace_packages = false

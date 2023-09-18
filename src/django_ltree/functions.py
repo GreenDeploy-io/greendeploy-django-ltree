@@ -1,8 +1,10 @@
-from django.db.models import Transform, fields
+from __future__ import annotations
 
-from django_ltree.fields import PathField
+from django.db.models import fields
+from django.db.models import Transform
 
 from .fields import PathField
+from django_ltree.fields import PathField
 
 __all__ = ("NLevel",)
 

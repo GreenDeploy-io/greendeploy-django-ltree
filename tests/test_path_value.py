@@ -1,23 +1,27 @@
+from __future__ import annotations
+
 import pytest
 from django.forms import TextInput
 
-from django_ltree.fields import (PathField, PathFormField, PathValue,
-                                 PathValueProxy)
+from django_ltree.fields import PathField
+from django_ltree.fields import PathFormField
+from django_ltree.fields import PathValue
+from django_ltree.fields import PathValueProxy
 
 
 def test_create():
-    assert str(PathValue([1, 2, 3, 4, 5])) == '1.2.3.4.5'
-    assert str(PathValue((1, 3, 5, 7))) == '1.3.5.7'
-    assert str(PathValue('hello.world')) == 'hello.world'
+    assert str(PathValue([1, 2, 3, 4, 5])) == "1.2.3.4.5"
+    assert str(PathValue((1, 3, 5, 7))) == "1.3.5.7"
+    assert str(PathValue("hello.world")) == "hello.world"
     assert str(PathValue(5)) == "5"
 
     def generator():
-        yield '100'
-        yield 'bottles'
-        yield 'of'
-        yield 'beer'
+        yield "100"
+        yield "bottles"
+        yield "of"
+        yield "beer"
 
-    assert str(PathValue(generator())) == '100.bottles.of.beer'
+    assert str(PathValue(generator())) == "100.bottles.of.beer"
 
 
 def test_invalid_value_for_path():
@@ -30,22 +34,27 @@ def test_path_value_repr():
     pv = PathValue("1/2/3")
     assert repr(pv) == "1.2.3"
 
+
 def test_path_value_str():
     pv = PathValue("1/2/3")
     assert str(pv) == "1.2.3"
+
 
 def test_path_value_repr_with_dots():
     pv = PathValue("1.2.3")
     assert repr(pv) == "1.2.3"
 
+
 def test_path_value_str_with_dots():
     pv = PathValue("1.2.3")
     assert str(pv) == "1.2.3"
+
 
 # More tests for other types of input
 def test_path_value_repr_with_list():
     pv = PathValue([1, 2, 3])
     assert repr(pv) == "1.2.3"
+
 
 def test_path_value_str_with_list():
     pv = PathValue([1, 2, 3])
@@ -82,6 +91,7 @@ def test_path_value_proxy_set():
     proxy.__set__(mock_instance, "some_value")
     assert mock_instance.some_field == "some_value"
 
+
 def test_path_field_formfield():
     field = PathField()
     form_field = field.formfield()
@@ -93,6 +103,7 @@ def test_path_field_formfield():
 
 # Initialize your PathField instance for the next 2 tests
 path_field = PathField()
+
 
 def test_to_python():
     # Test when value is None

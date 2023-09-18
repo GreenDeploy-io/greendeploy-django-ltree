@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
-from .fields import PathField, PathValue
+from .fields import PathField
+from .fields import PathValue
 from .managers import TreeManager
 from .paths import PathGenerator
 
@@ -15,7 +18,7 @@ class TreeModel(models.Model):
         ordering = ("path",)
 
     def get_label_field(self):
-        if label_field := getattr(self, 'label_field', None):
+        if label_field := getattr(self, "label_field", None):
             return label_field
         else:
             raise ImproperlyConfigured(
@@ -26,11 +29,7 @@ class TreeModel(models.Model):
         return self.path[-1]
 
     def get_ancestors_paths(self):  # type: () -> List[List[str]]
-        return [
-            PathValue(self.path[:n])
-            for n, p in enumerate(self.path)
-            if n > 0
-        ]
+        return [PathValue(self.path[:n]) for n, p in enumerate(self.path) if n > 0]
 
     def ancestors(self):
         return type(self)._default_manager.filter(path__ancestors=self.path)
@@ -54,7 +53,6 @@ class TreeModel(models.Model):
             .exclude(path=self.path)
         )
 
-
     def add_child(self, **kwargs):
         label_field = self.get_label_field()
 
@@ -65,11 +63,9 @@ class TreeModel(models.Model):
 
         # label_field value cannot be None
         if kwargs[label_field] is None:
-            raise ImproperlyConfigured(
-                f"'{label_field}' cannot be None."
-            )
+            raise ImproperlyConfigured(f"'{label_field}' cannot be None.")
 
-        if 'path' in kwargs:
+        if "path" in kwargs:
             raise ImproperlyConfigured(
                 "'path' should not be provided in kwargs, it will be automatically set."
             )
@@ -84,5 +80,3 @@ class TreeModel(models.Model):
         kwargs["path"] = next(path_generator)  # updated to Python 3's next function
 
         return type(self)._default_manager.create(**kwargs)
-
-

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 
 import django
@@ -14,7 +16,7 @@ def pytest_sessionstart(session):
                 "NAME": os.environ.get("DJANGO_DATABASE_NAME", "ltree_test"),
                 "HOST": os.environ.get("DJANGO_DATABASE_HOST", "localhost"),
                 "USER": os.environ.get("DJANGO_DATABASE_USER", "postgres"),
-                "PASSWORD": os.environ.get("DJANGO_DATABASE_PASSWORD", "postgres")
+                "PASSWORD": os.environ.get("DJANGO_DATABASE_PASSWORD", "postgres"),
             }
         },
         ROOT_URLCONF="tests.urls",

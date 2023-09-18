@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections import UserList
 from collections.abc import Iterable
 
@@ -17,7 +19,7 @@ class PathValue(UserList):
         elif isinstance(value, Iterable):
             value = [str(v) for v in value]
         else:
-            raise ValueError("Invalid value: {!r} for path".format(value))
+            raise ValueError(f"Invalid value: {value!r} for path")
 
         super().__init__(initlist=value)
 
