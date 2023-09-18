@@ -18,11 +18,11 @@ greendeploy-django-ltree
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-.. image:: https://img.shields.io/librariesio/sourcerank/pypi/greendeploy-django-ltree
+.. image:: https://img.shields.io/librariesio/sourcerank/pypi/greendeploy-django-ltree?style=for-the-badge
     :target: https://libraries.io/pypi/greendeploy-django-ltree/sourcerank
     :alt: sourcerank
 
-.. image:: https://app.codacy.com/project/badge/Grade/abd5850349c04b85889f317786898b7c
+.. image:: https://img.shields.io/codacy/grade/abd5850349c04b85889f317786898b7c?style=for-the-badge
     :target: https://app.codacy.com/gh/GreenDeploy-io/greendeploy-django-ltree/dashboard
     :alt: codacy-grade-A
 
