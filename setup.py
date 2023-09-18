@@ -7,7 +7,7 @@ with open("README.rst", "r") as fh:
 
 
 setup(
-    name="django_ltree",
+    name="greendeploy-django-ltree",
     version="0.5.3",
     python_requires=">=2.7",
     url="https://github.com/GreenDeploy-io/greendeploy-django-ltree",
