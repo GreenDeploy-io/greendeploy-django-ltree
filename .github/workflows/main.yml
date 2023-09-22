@@ -87,7 +87,7 @@ jobs:
         DJANGO_DATABASE_USER: ${{ env.POSTGRES_USER }}
         DJANGO_DATABASE_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         DJANGO_DATABASE_NAME: ${{ env.POSTGRES_DB }}
-      run: pytest --cov # replace with your test command
+      run: pytest --cov -c pytest.ini # replace with your test command
 
     - name: List directory contents
       run: ls -al
