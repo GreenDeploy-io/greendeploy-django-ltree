@@ -41,16 +41,16 @@ jobs:
 
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
     # Cache other dependencies from requirements.txt
     - name: Cache pip dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -59,7 +59,7 @@ jobs:
 
     # Cache matrix dependencies
     - name: Cache matrix dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-matrix-${{ matrix.django-version }}
@@ -108,9 +108,9 @@ jobs:
     needs: build  # depends on the 'build' job
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
@@ -143,10 +143,8 @@ jobs:
         run: |
           cd coverage-data
           num_files=$(ls .coverage_* | wc -l)
-          echo "::set-output name=num_files::$num_files"
       # previously: python -m coverage combine ./.coverage  # specify the file
       - name: Combine coverage data
-        if: steps.check-num-files.outputs.num_files > 1
         run: |
           cd coverage-data
           python -m coverage combine .coverage_*
@@ -154,8 +152,9 @@ jobs:
       - name: Generate HTML report
         run: |
           cd coverage-data
-          ls -al
+          ls -alh
           python -m coverage html --skip-covered --skip-empty || echo "Coverage command failed"
+          python -m coverage report
 
       # Comment for debugging. Uncomment to fail if coverage is below 100%.
       # - name: Fail if coverage is below 100%
