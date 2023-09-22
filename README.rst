@@ -146,6 +146,56 @@ published on 11th September 2023.
 in its time; gratitude and a big thank you to every one of them.
 
 Quick Start
--------------
+-----------
 
-@TODO: Add quick start here.
+Run tests locally
+^^^^^^^^^^^^^^^^^
+
+Pre-requisites:
+
+- you have Docker installed
+
+Steps:
+
+1. Spin up a postgres on Docker
+
+   Location: project root
+   Command: `docker run --name some-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=ltree_test -p 5432:5432 -d postgres`
+
+   Pre-requisites:
+     - the credentials such as password, etc should match `conftest.py`.
+
+   Leeway:
+     - You may change `some-postgres` to something else.
+
+2. Start your own venv
+3. Pip install the requirements in that venv
+
+   Location: project root
+   Command: `pip install -r requirements.txt`
+
+4. Run pytest
+
+    Location: project root
+    Command: `pytest -x -c pytest.ini`
+
+    Explain: `-x` stop on first failure `-c pytest.ini` use `pytest.ini` as config
+
+    4a. if you want to run pytest for just one test case or one file
+
+    Command: `pytest -k '<test_case_name_or_test_file>'`
+
+    Explain: `-k` the name of file or test case. Can be partial
+
+    4b. if you want to add `ipdb` breakpoints
+
+    Command: `pytest -s -k '<test_case_name_or_test_file>'`
+
+    Explain: `-s` system output for the breakpoints
+
+
+
+
+
+
+
